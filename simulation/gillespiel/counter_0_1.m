@@ -24,7 +24,8 @@ p.k_BAD_on = 0.0002; % TF activation: sec^-1 -> calculated by hand
 p.k_BAD_off = 0.01; %TF deactivation: sec^-1 -> given by kobi
 p.kM_BAD_flp = 0.000231; %transcription:  sec^-1 -> calculated by hand ( steady state concentration: 0.1 ; half-life: 5*60 sec)
 p.kP_Flp = 0.00577; % translation: sec^-1 -> calculated by hand ( steady state concentration: 10 ; half-life: 20*60 sec (cell divison rate))
-p.kR_Flp = 4.81*10^-5; % recombination: sec^1 -> calculated by hand ( from paper suggestiong 4h half-time for the process)
+% p.kR_Flp = 4.81*10^-5; % recombination: sec^1 -> calculated by hand ( from paper suggestiong 4h half-time for the process)
+p.kR_Flp = 2.8*10^-3; % recombination: sec^1 -> derived from paper stating cleavage rate constant for Flp
 p.gM_flp =0.00231; % mRNA_flp decay: sec^-1 -> calculated by hand (derived from k_syn)
 p.gP_Flp  = 0.011; % Flp decay: sec^-1 -> calculated by hand (derived from Paper stating GFPssrA tagged half time of 60s)
 p.gP_Ara = 0.0003; % from Paper, constant consumption rate of arabinose
@@ -40,7 +41,7 @@ stoich_matrix = [-1     -1      1          0       0     0        0         0   
                   1      1     -1          0       0     0        0         0          0       0     0          0               0            %DNA_0_BAD                --k_BAD_off-->                  DNA_0 + Ara
                   0      0      0          1       0     0        0         0          0       0     0          0               0            %DNA_0_BAD                --kM_BAD_flp-->                 DNA_0_BAD + mRNA_flp
                   0      0      0          0       1     0        0         0          0       0     0          0               0            %mRNA_flp                 --kP_Flp-->                     mRNA_flp + Flp
-                  0      0     -1          0       0     0        1         0          0       0     0          0               0            %DNA_0_BAD + Flp          --kR_Flp-->                     DNA_1_BAD + Flp
+                  0      0     -1          0       0     0        1         0          0       0     0          0               0            %DNA_0_BAD + 4Flp         --kR_Flp-->                     DNA_1_BAD + 4Flp
                   0      0      0         -1       0     0        0         0          0       0     0          0               0            %mRNA_flp                 --gM_flp-->                     0
                   0      0      0          0      -1     0        0         0          0       0     0          0               0            %Flp                      --gP_Flp-->                     0
                   0     -1      0          0       0     0        0         0          0       0     0          0               0];          %Ara                      --gP_Ara-->                     0
