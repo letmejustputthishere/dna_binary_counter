@@ -54,7 +54,7 @@ stoich_matrix = [-1     -1      1          0       0     0        0         0   
 %[t,x] = firstReactionMethod(stoich_matrix, pfun, tspan, x0, p);
 
 %% Plot time course
-figure();
+% figure();
 
 % REMOVE ARA COLUMN FROM VECTOR
 
@@ -64,17 +64,17 @@ x(:,2) = [];
 % REMOVE DNA_1 COLUMN FROM VECTOR ( NOW AT COLUMN 5 INSTEAD OF 6)
 x(:,5) = [];
 
-
-stairs(t,x(:,1:5)); set(gca,'XLim',tspan);
-
-% set log scale 
-set(gca,'XScale','log');
-
-xlabel('time (s)');
-ylabel('molecules');
-
-% CAUTION: DNA_1 and Ara ARE MISSING FROM THIS GRAPH
-legend('DNA_0', 'DNA_0_BAD', 'mRNA_flp', 'Flp', 'DNA_1_BAD');
+createfigure(t,x(:,1:5));
+% stairs(t,x(:,1:5)); set(gca,'XLim',tspan);
+% 
+% % set log scale 
+% set(gca,'XScale','log');
+% 
+% xlabel('time (s)');
+% ylabel('molecules');
+% 
+% % CAUTION: DNA_1 and Ara ARE MISSING FROM THIS GRAPH
+% legend('DNA_0', 'DNA_0_BAD', 'mRNA_flp', 'Flp', 'DNA_1_BAD');
 
 end
 
