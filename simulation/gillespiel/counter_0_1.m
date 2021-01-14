@@ -24,13 +24,13 @@ p.k_BAD_on = 0.0002; % TF activation: sec^-1 -> calculated by hand
 p.k_BAD_off = 0.01; %TF deactivation: sec^-1 -> given by kobi
 p.kM_BAD_flp = 0.000231; %transcription:  sec^-1 -> calculated by hand ( steady state concentration: 0.1 ; half-life: 5*60 sec)
 p.kP_Flp = 0.00577; % translation: sec^-1 -> calculated by hand ( steady state concentration: 10 ; half-life: 20*60 sec (cell divison rate))
-p.kR_Flp = 0.0001;
+p.kR_Flp = 4.81*10^-5; % recombination: sec^1 -> calculated by hand ( from paper suggestiong 4h half-time for the process)
 p.gM_flp =0.00231; % mRNA_flp decay: sec^-1 -> calculated by hand (derived from k_syn)
-p.gP_Flp  = 0.000577; % Flp decay: sec^-1 -> calculated by hand (derived from k_syn)
+p.gP_Flp  = 0.011; % Flp decay: sec^-1 -> calculated by hand (derived from Paper stating GFPssrA tagged half time of 60s)
 p.gP_Ara = 0.0003; % from Paper, constant consumption rate of arabinose
 % p.gP_Ara = 0.1201; % from Paper, exponential degradation 
 %% Initial state
-tspan = [0, 1.5*10^4]; %seconds (8 hour Ara pulse described in paper)
+tspan = [0, 60*60*8]; %seconds (8 hour Ara pulse described in paper)
 x0    = [100, 8000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];     %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_iptg, GFP, IPTG, DNA_1_BAD_A1lacO, DNA_0_BAD_A1lacO
 
 %% Specify reaction network
@@ -64,7 +64,7 @@ x(:,2) = [];
 x(:,5) = [];
 
 
-stairs(t,x); set(gca,'XLim',tspan);
+stairs(t,x(:,1:5)); set(gca,'XLim',tspan);
 
 % set log scale 
 set(gca,'XScale','log');
