@@ -28,11 +28,11 @@ ylabel('molecules');
 xlabel('time (s)');
 
 % Uncomment the following line to preserve the X-limits of the axes
-xlim(axes1,[0 15000]);
+%xlim(axes1,[0 15000]);
 box(axes1,'on');
 hold(axes1,'off');
 % Set the remaining axes properties
-set(axes1,'FontSize',24,'GridAlpha',0.5,'LineStyleOrder',{'-'},'XGrid','on','XMinorGrid','on','XMinorTick','on','XScale','log','YGrid','on','YMinorGrid',...
+set(axes1,'FontSize',24,'GridAlpha',0.5,'LineStyleOrder',{'-'},'XGrid','on','XMinorGrid','on','XMinorTick','on','YScale','log','XScale','log','YGrid','on','YMinorGrid',...
     'on');
 % Create legend
 legend1 = legend(axes1,'show');
