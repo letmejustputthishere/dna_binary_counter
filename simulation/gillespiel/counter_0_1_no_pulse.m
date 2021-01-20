@@ -1,6 +1,7 @@
 function [x] = counter_0_1_no_pulse(x0)
 %% Simulate a two bit DNA based counter
 import Gillespie.*
+import Figures.*
 
 %% Reaction network:
 %%% DNA_0
@@ -20,6 +21,9 @@ import Gillespie.*
 %   9. Ara decay:          Ara                      --gP_Ara-->                     0
 
 %   10. recombination:     DNA_1_BAD + Flp          --kR_Flp-->                     DNA_0_BAD + Flp
+
+%   11. TF activation:     DNA_1 + Ara              --k_BAD_on-->                   DNA_1_BAD
+%   12. TF deactivation:   DNA_1_BAD                --k_BAD_off-->                  DNA_1 + Ara
 
 
 %% Rate constants
@@ -55,8 +59,9 @@ stoich_matrix = [-1     -1      1          0       0     0        0         0   
                   0      0      0         -1       0     0        0         0          0       0     0          0               0            %mRNA_flp                 --gM_flp-->                     0
                   0      0      0          0      -1     0        0         0          0       0     0          0               0            %Flp                      --gP_Flp-->                     0
                   0     -1      0          0       0     0        0         0          0       0     0          0               0            %Ara                      --gP_Ara-->                     0
-                  0      0      1          0       0     0       -1         0          0       0     0          0               0];          %DNA_1_BAD + Flp          --kR_Flp-->                     DNA_0_BAD + Flp
-
+                  0      0      1          0       0     0       -1         0          0       0     0          0               0            %DNA_1_BAD + Flp          --kR_Flp-->                     DNA_0_BAD + Flp
+                  0     -1      0          0       0    -1        1         0          0       0     0          0               0            %DNA_1 + Ara              --k_BAD_on-->                   DNA_1_BAD
+                  0      1      0          0       0     1       -1         0          0       0     0          0               0];          %DNA_1_BAD                --k_BAD_off-->                  DNA_1 + Ara
 
 
 
@@ -64,19 +69,20 @@ stoich_matrix = [-1     -1      1          0       0     0        0         0   
 
 %% Run simulation
 [t,x] = directMethod(stoich_matrix, pfun, tspan, x0, p);
-%[t,x] = firstReactionMethod(stoich_matrix, pfun, tspan, x0, p);
+% [t,x] = firstReactionMethod(stoich_matrix, pfun, tspan, x0, p);
 
 %% Plot time course
 x_modified = x;
+
 % REMOVE ARA COLUMN FROM VECTOR
 % CAREFUL, INDEXES SHIFT WITH THIS OPERATION!
-% x_modified(:,2) = [];
+x_modified(:,2) = [];
 
-% REMOVE DNA_1 COLUMN FROM VECTOR ( NOW AT COLUMN 5 INSTEAD OF 6)
-x_modified(:,5) = [];
+% % CAUTION: DNA_1 IS MISSING FROM THIS GRAPH
+createfigure(t,x_modified(:,1:6));
 
-% CAUTION: DNA_1 MISSING FROM THIS GRAPH
-createfigure_no_pulse(t,x_modified(:,1:6));
+% CAUTION: only ARA being plotted
+createfigure_ARA_degrade(t,x(:,2));
 
 end
 
@@ -104,17 +110,21 @@ R_tot = p.k_BAD_on*DNA_0*Ara + ...
     p.kR_Flp*DNA_0_BAD*Flp + ...
     p.gM_flp*mRNA_flp + ...
     p.gP_Flp*Flp + ...
-    p.gP_Ara*Ara + ...
-    p.kR_Flp*DNA_1_BAD*Flp;
+    p.gP_Ara*Ara + ... %protein decay !!! exponential −dAra ⋅[ara] !!!
+    p.kR_Flp*DNA_1_BAD*Flp + ...
+    p.k_BAD_on*DNA_1*Ara + ...
+    p.k_BAD_off*DNA_1_BAD;
 
 a = [p.k_BAD_on*DNA_0*Ara/R_tot;            %activation promoter
-     p.k_BAD_off*DNA_0_BAD;       %deactivation promoter
-     p.kM_BAD_flp*DNA_0_BAD;       %transcription
-     p.kP_Flp*mRNA_flp;   %translation
+     p.k_BAD_off*DNA_0_BAD/R_tot;       %deactivation promoter
+     p.kM_BAD_flp*DNA_0_BAD/R_tot;       %transcription
+     p.kP_Flp*mRNA_flp/R_tot;   %translation
      p.kR_Flp*DNA_0_BAD*Flp/R_tot;   %recombination
-     p.gM_flp*mRNA_flp;   %protein decay
-     p.gP_Flp*Flp; %protein decay 
+     p.gM_flp*mRNA_flp/R_tot;   %protein decay
+     p.gP_Flp*Flp/R_tot; %protein decay 
 %      p.gP_Ara; %protein decay !!! CONSTANT LIKE IN PAPER −cAra !!!
-     p.gP_Ara*Ara;   %protein decay !!! exponential −dAra ⋅[ara] !!!
-     p.kR_Flp*DNA_1_BAD*Flp/R_tot;];   %recombination
+     p.gP_Ara*Ara/R_tot;   %protein decay !!! exponential −dAra ⋅[ara] !!!
+     p.kR_Flp*DNA_1_BAD*Flp/R_tot;   %recombination
+     p.k_BAD_on*DNA_1*Ara/R_tot; % activation promoter
+     p.k_BAD_off*DNA_1_BAD/R_tot;]; % deactivation promoter
 end

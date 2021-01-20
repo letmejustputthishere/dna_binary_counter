@@ -1,6 +1,7 @@
 function [x] = counter_0_1_pulse()
 % Simulate a two bit DNA based counter
 import Gillespie.*
+import Figures.*
 
 %% Reaction network:
 %%% DNA_0
@@ -21,15 +22,18 @@ import Gillespie.*
 
 %   10. recombination:     DNA_1_BAD + Flp          --kR_Flp-->                     DNA_0_BAD + Flp
 
+%   11. TF activation:     DNA_1 + Ara              --k_BAD_on-->                   DNA_1_BAD
+%   12. TF deactivation:   DNA_1_BAD                --k_BAD_off-->                  DNA_1 + Ara
+
 
 %% Rate constants
 p.k_BAD_on = 0.0002; % TF activation: sec^-1 -> calculated by hand
 p.k_BAD_off = 0.01; %TF deactivation: sec^-1 -> given by kobi
-p.kM_BAD_flp = 0.01155; %transcription:  sec^-1 -> calculated by hand ( steady state concentration: 5 ; half-life: 5*60 sec)
+p.kM_BAD_flp = 0.00231; %transcription:  sec^-1 -> calculated by hand ( steady state concentration: 1 ; half-life: 5*60 sec)
 p.kP_Flp = 0.0577; % translation: sec^-1 -> calculated by hand ( steady state concentration: 100 ; half-life: 20*60 sec (cell divison rate))
 p.kR_Flp = 4.81*10^-5; % recombination: sec^1 -> calculated by hand ( from paper suggestiong 4h half-time for the process)
 % p.kR_Flp = 2.8*10^-3; % recombination: sec^1 -> derived from paper stating cleavage rate constant for Flp
-p.gM_flp =0.00231; % mRNA_flp decay: sec^-1 -> calculated by hand (derived from k_syn)
+p.gM_flp =0.00231; % mRNA_flp decay: sec^-1 -> calculated by hand (derived from half life )
 p.gP_Flp  = 0.011; % Flp decay: sec^-1 -> calculated by hand (derived from Paper stating GFPssrA tagged half time of 60s)
 p.gP_Ara = 0.0003; % from Paper, constant consumption rate of arabinose
 % p.gP_Ara = 0.1201; % from Paper, exponential degradation 
@@ -54,7 +58,9 @@ stoich_matrix = [-1     -1      1          0       0     0        0         0   
                   0      0      0         -1       0     0        0         0          0       0     0          0               0            %mRNA_flp                 --gM_flp-->                     0
                   0      0      0          0      -1     0        0         0          0       0     0          0               0            %Flp                      --gP_Flp-->                     0
                   0     -1      0          0       0     0        0         0          0       0     0          0               0            %Ara                      --gP_Ara-->                     0
-                  0      0      1          0       0     0       -1         0          0       0     0          0               0];          %DNA_1_BAD + Flp          --kR_Flp-->                     DNA_0_BAD + Flp
+                  0      0      1          0       0     0       -1         0          0       0     0          0               0            %DNA_1_BAD + Flp          --kR_Flp-->                     DNA_0_BAD + Flp
+                  0     -1      0          0       0    -1        1         0          0       0     0          0               0            %DNA_1 + Ara              --k_BAD_on-->                   DNA_1_BAD
+                  0      1      0          0       0     1       -1         0          0       0     0          0               0];          %DNA_1_BAD                --k_BAD_off-->                  DNA_1 + Ara
 
 %% Run simulation
 [t,x] = directMethod(stoich_matrix, pfun, tspan, x0, p);
@@ -63,15 +69,13 @@ stoich_matrix = [-1     -1      1          0       0     0        0         0   
 
 %% Plot time course
 x_modified = x;
+
 % REMOVE ARA COLUMN FROM VECTOR
 % CAREFUL, INDEXES SHIFT WITH THIS OPERATION!
 x_modified(:,2) = [];
 
-% REMOVE DNA_1 COLUMN FROM VECTOR ( NOW AT COLUMN 5 INSTEAD OF 6)
-x_modified(:,5) = [];
-
-% % CAUTION: DNA_1 and Ara ARE MISSING FROM THIS GRAPH
-createfigure(t,x_modified(:,1:5));
+% % CAUTION: DNA_1 IS MISSING FROM THIS GRAPH
+createfigure(t,x_modified(:,1:6));
 
 %% return only the last row as the new inital state for the next simulation
 x = x(end,:);
@@ -103,16 +107,20 @@ R_tot = p.k_BAD_on*DNA_0*Ara + ...
     p.gM_flp*mRNA_flp + ...
     p.gP_Flp*Flp + ...
     p.gP_Ara + ...
-    p.kR_Flp*DNA_1_BAD*Flp;
+    p.kR_Flp*DNA_1_BAD*Flp + ...
+    p.k_BAD_on*DNA_1*Ara + ...
+    p.k_BAD_off*DNA_1_BAD;
 
 a = [p.k_BAD_on*DNA_0*Ara/R_tot;            %activation promoter
-     p.k_BAD_off*DNA_0_BAD;       %deactivation promoter
-     p.kM_BAD_flp*DNA_0_BAD;       %transcription
-     p.kP_Flp*mRNA_flp;   %translation
+     p.k_BAD_off*DNA_0_BAD/R_tot;       %deactivation promoter
+     p.kM_BAD_flp*DNA_0_BAD/R_tot;       %transcription
+     p.kP_Flp*mRNA_flp/R_tot/R_tot;   %translation
      p.kR_Flp*DNA_0_BAD*Flp/R_tot;   %recombination
-     p.gM_flp*mRNA_flp;   %protein decay
-     p.gP_Flp*Flp; %protein decay 
-     p.gP_Ara; %protein decay !!! CONSTANT LIKE IN PAPER −cAra !!!
+     p.gM_flp*mRNA_flp/R_tot;   %protein decay
+     p.gP_Flp*Flp/R_tot; %protein decay 
+     p.gP_Ara/R_tot; %protein decay !!! CONSTANT LIKE IN PAPER −cAra !!!
      %p.gP_Ara*Ara;   %protein decay !!! exponential −dAra ⋅[ara] !!!
-     p.kR_Flp*DNA_1_BAD*Flp/R_tot;];   %recombination
+     p.kR_Flp*DNA_1_BAD*Flp/R_tot;   %recombination
+     p.k_BAD_on*DNA_1*Ara/R_tot; % activation promoter
+     p.k_BAD_off*DNA_1_BAD/R_tot;]; % deactivation promoter
 end
