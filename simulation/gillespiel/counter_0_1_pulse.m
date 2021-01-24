@@ -42,7 +42,7 @@ p.gP_Ara = 0.0003; % from Paper, constant consumption rate of arabinose
 tspan = [0, 60*60*8]; %seconds (8 hour Ara pulse described in paper)
 
 %% single cell concentrations
-x0    = [1, 10^6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];     %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_iptg, GFP, IPTG, DNA_1_BAD_A1lacO, DNA_0_BAD_A1lacO
+x0    = [1, 10^4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];     %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_iptg, GFP, IPTG, DNA_1_BAD_A1lacO, DNA_0_BAD_A1lacO
 
 %% mass action 
 % x0    = [100, 8000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];     %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_iptg, GFP, IPTG, DNA_1_BAD_A1lacO, DNA_0_BAD_A1lacO
