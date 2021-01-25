@@ -40,28 +40,21 @@ p.gP_Ara = 0.1201; % from Paper, exponential degradation
 %% Initial state
 tspan = [0, 60*60*8]; %seconds (8 hour Ara pulse described in paper)
 
-% single cell concentrations
 
-% those values are the input parameter of the function
-
-% x0    = [1, 10^6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];     %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_iptg, GFP, IPTG, DNA_1_BAD_A1lacO, DNA_0_BAD_A1lacO
-
-% mass action 
-% x0    = [100, 8000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];     %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_iptg, GFP, IPTG, DNA_1_BAD_A1lacO, DNA_0_BAD_A1lacO
 %% Specify reaction network
 pfun = @propensities_2state;
-                %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_iptg, GFP, IPTG, DNA_1_BAD_A1lacO, DNA_0_BAD_A1lacO
-stoich_matrix = [-1     -1      1          0       0     0        0         0          0       0     0          0               0            %DNA_0 + Ara              --k_BAD_on-->                   DNA_0_BAD
-                  1      1     -1          0       0     0        0         0          0       0     0          0               0            %DNA_0_BAD                --k_BAD_off-->                  DNA_0 + Ara
-                  0      0      0          1       0     0        0         0          0       0     0          0               0            %DNA_0_BAD                --kM_BAD_flp-->                 DNA_0_BAD + mRNA_flp
-                  0      0      0          0       1     0        0         0          0       0     0          0               0            %mRNA_flp                 --kP_Flp-->                     mRNA_flp + Flp
-                  0      0     -1          0       0     0        1         0          0       0     0          0               0            %DNA_0_BAD + 4Flp         --kR_Flp-->                     DNA_1_BAD + 4Flp
-                  0      0      0         -1       0     0        0         0          0       0     0          0               0            %mRNA_flp                 --gM_flp-->                     0
-                  0      0      0          0      -1     0        0         0          0       0     0          0               0            %Flp                      --gP_Flp-->                     0
-                  0     -1      0          0       0     0        0         0          0       0     0          0               0            %Ara                      --gP_Ara-->                     0
-                  0      0      1          0       0     0       -1         0          0       0     0          0               0            %DNA_1_BAD + Flp          --kR_Flp-->                     DNA_0_BAD + Flp
-                  0     -1      0          0       0    -1        1         0          0       0     0          0               0            %DNA_1 + Ara              --k_BAD_on-->                   DNA_1_BAD
-                  0      1      0          0       0     1       -1         0          0       0     0          0               0];          %DNA_1_BAD                --k_BAD_off-->                  DNA_1 + Ara
+                %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_T7p, GFP,   T7p 
+stoich_matrix = [-1     -1      1          0       0     0        0         0          0       0     0            %DNA_0 + Ara              --k_BAD_on-->                   DNA_0_BAD
+                  1      1     -1          0       0     0        0         0          0       0     0            %DNA_0_BAD                --k_BAD_off-->                  DNA_0 + Ara
+                  0      0      0          1       0     0        0         0          0       0     0            %DNA_0_BAD                --kM_BAD_flp-->                 DNA_0_BAD + mRNA_flp
+                  0      0      0          0       1     0        0         0          0       0     0            %mRNA_flp                 --kP_Flp-->                     mRNA_flp + Flp
+                  0      0     -1          0       0     0        1         0          0       0     0            %DNA_0_BAD + 4Flp         --kR_Flp-->                     DNA_1_BAD + 4Flp
+                  0      0      0         -1       0     0        0         0          0       0     0            %mRNA_flp                 --gM_flp-->                     0
+                  0      0      0          0      -1     0        0         0          0       0     0            %Flp                      --gP_Flp-->                     0
+                  0     -1      0          0       0     0        0         0          0       0     0            %Ara                      --gP_Ara-->                     0
+                  0      0      1          0       0     0       -1         0          0       0     0            %DNA_1_BAD + Flp          --kR_Flp-->                     DNA_0_BAD + Flp
+                  0     -1      0          0       0    -1        1         0          0       0     0            %DNA_1 + Ara              --k_BAD_on-->                   DNA_1_BAD
+                  0      1      0          0       0     1       -1         0          0       0     0];          %DNA_1_BAD                --k_BAD_off-->                  DNA_1 + Ara
 
 
 
@@ -96,12 +89,6 @@ mRNA_flp = x(4);
 Flp = x(5);
 DNA_1 = x(6);
 DNA_1_BAD =x(7);
-mRNA_gfp = x(8);
-mRNA_iptg = x(9);
-GFP = x(10);
-IPTG = x(11);
-DNA_1_BAD_A1lacO = x(12);
-DNA_0_BAD_A1lacO = x(13);
 
 R_tot = p.k_BAD_on*DNA_0*Ara + ...
     p.k_BAD_off*DNA_0_BAD + ...
