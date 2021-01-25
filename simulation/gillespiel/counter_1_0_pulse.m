@@ -8,7 +8,7 @@ import Figures.*
 %   1. TF activation:      DNA_0 + Ara              --k_BAD_on-->                   DNA_0_BAD
 %   2. TF deactivation:    DNA_0_BAD                --k_BAD_off-->                  DNA_0 + Ara
 
-%   3. transcription:      DNA_0_BAD                --kM_BAD_flp-->                 DNA_0_BAD + mRNA_flp
+%   ((3. transcription:      DNA_0_BAD                --kM_BAD_flp-->                 DNA_0_BAD + mRNA_flp))
 
 %   4. translation:        mRNA_flp                 --kP_Flp-->                     mRNA_flp + Flp
 
@@ -62,10 +62,11 @@ p.kM_BAD_gfp_T7p = 0.00231; %transcription:  sec^-1 -> calculated by hand ( stea
 p.kP_GFP = 0.0577; % translation: sec^-1 -> calculated by hand ( steady state concentration: 100 ; half-life: 20*60 sec (cell divison rate))
 p.kP_T7p = 0.0577; % translation: sec^-1 -> calculated by hand ( steady state concentration: 100 ; half-life: 20*60 sec (cell divison rate))
 p.kM_T7p_flp = 5*0.00231; %transcription:  sec^-1 -> calculated by hand ( steady state concentration: 1 ; half-life: 5*60 sec)  (5 times higher than normal RNA polymerase)
-p.gM_gfp = 0.00231; % decay: sec^-1 -> calculated by hand (derived from half life )
-p.gM_T7p = 0.00231; % decay: sec^-1 -> calculated by hand (derived from half life )
+p.gM_gfp = 0.00231; % mRNA decay: sec^-1 -> calculated by hand (derived from half life )
+p.gM_T7p = 0.00231; % mRNA decay: sec^-1 -> calculated by hand (derived from half life )
 p.gP_GFP = 0.000577; % calcualted by hand (dervied from 20 min half-life)
-p.gP_T7p = 0.00023; % derived from paper
+%p.gP_T7p = 0.00023; % derived from paper 
+p.gP_T7p = 0.011; % T7p decay: sec^-1 -> calculated by hand (derived from Paper stating GFPssrA tagged half time of 60s)
 
 
 %% Initial state
@@ -79,7 +80,6 @@ pfun = @propensities_2state;
                 %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_T7p, GFP,   T7p 
 stoich_matrix = [-1     -1      1          0       0     0        0         0          0       0     0            %DNA_0 + Ara              --k_BAD_on-->                   DNA_0_BAD
                   1      1     -1          0       0     0        0         0          0       0     0            %DNA_0_BAD                --k_BAD_off-->                  DNA_0 + Ara
-                  0      0      0          1       0     0        0         0          0       0     0            %DNA_0_BAD                --kM_BAD_flp-->                 DNA_0_BAD + mRNA_flp
                   0      0      0          0       1     0        0         0          0       0     0            %mRNA_flp                 --kP_Flp-->                     mRNA_flp + Flp
                   0      0     -1          0       0     0        1         0          0       0     0            %DNA_0_BAD + 4Flp         --kR_Flp-->                     DNA_1_BAD + 4Flp
                   0      0      0         -1       0     0        0         0          0       0     0            %mRNA_flp                 --gM_flp-->                     0
@@ -137,7 +137,6 @@ T7p = x(11);
 
 R_tot = p.k_BAD_on*DNA_0*Ara + ...
     p.k_BAD_off*DNA_0_BAD + ...
-    p.kM_BAD_flp*DNA_0_BAD + ...
     p.kP_Flp*mRNA_flp + ...
     p.kR_Flp*DNA_0_BAD*Flp + ...
     p.gM_flp*mRNA_flp + ...
@@ -160,7 +159,6 @@ R_tot = p.k_BAD_on*DNA_0*Ara + ...
 
 a = [p.k_BAD_on*DNA_0*Ara/R_tot;            %activation promoter
      p.k_BAD_off*DNA_0_BAD/R_tot;       %deactivation promoter
-     p.kM_BAD_flp*DNA_0_BAD/R_tot;       %transcription
      p.kP_Flp*mRNA_flp/R_tot/R_tot;   %translation
      p.kR_Flp*DNA_0_BAD*Flp/R_tot;   %recombination
      p.gM_flp*mRNA_flp/R_tot;   %protein decay
