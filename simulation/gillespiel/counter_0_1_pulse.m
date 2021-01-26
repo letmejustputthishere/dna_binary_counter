@@ -72,8 +72,8 @@ x_modified = x;
 % CAREFUL, INDEXES SHIFT WITH THIS OPERATION!
 x_modified(:,2) = [];
 
-% % CAUTION: DNA_1 IS MISSING FROM THIS GRAPH
-createfigure(t,x_modified(:,1:6));
+% % CAUTION: ARA IS MISSING FROM THIS GRAPH
+createfigure_0_1(t,x_modified(:,1:6), 'First Ara pulse - counting 0 to 1');
 
 %% return only the last row as the new inital state for the next simulation
 x = x(end,:);

@@ -72,10 +72,10 @@ x_modified = x;
 x_modified(:,2) = [];
 
 % % CAUTION: DNA_1 IS MISSING FROM THIS GRAPH
-createfigure(t,x_modified(:,1:6));
+createfigure_0_1(t,x_modified(:,1:6), 'After first Ara pulse');
 
 % CAUTION: only ARA being plotted
-createfigure_ARA_degrade(t,x(:,2));
+createfigure_ARA_degrade(t,x(:,2), 'Ara degradation after first pulse');
 
 end
 

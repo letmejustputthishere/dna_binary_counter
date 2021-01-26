@@ -1,4 +1,4 @@
-function [x] = counter_1_0_pulse()
+function [x] = counter_1_0_no_pulse(x0)
 % Simulate a two bit DNA based counter
 import Gillespie.*
 import Figures.*
@@ -56,8 +56,8 @@ p.kR_Flp = 4.81*10^-5; % recombination: sec^1 -> calculated by hand ( from paper
 % p.kR_Flp = 2.8*10^-3; % recombination: sec^1 -> derived from paper stating cleavage rate constant for Flp
 p.gM_flp =0.00231; % mRNA_flp decay: sec^-1 -> calculated by hand (derived from half life )
 p.gP_Flp  = 0.011; % Flp decay: sec^-1 -> calculated by hand (derived from Paper stating GFPssrA tagged half time of 60s)
-p.gP_Ara = 0.0003; % from Paper, constant consumption rate of arabinose
-% p.gP_Ara = 0.1201; % from Paper, exponential degradation 
+%p.gP_Ara = 0.0003; % from Paper, constant consumption rate of arabinose
+p.gP_Ara = 0.1201; % from Paper, exponential degradation 
 p.kM_BAD_gfp_T7p = 0.00231; %transcription:  sec^-1 -> calculated by hand ( steady state concentration: 1 ; half-life: 5*60 sec) 
 p.kP_GFP = 0.0577; % translation: sec^-1 -> calculated by hand ( steady state concentration: 100 ; half-life: 20*60 sec (cell divison rate))
 p.kP_T7p = 0.0577; % translation: sec^-1 -> calculated by hand ( steady state concentration: 100 ; half-life: 20*60 sec (cell divison rate))
@@ -72,8 +72,6 @@ p.gP_T7p = 0.011; % T7p decay: sec^-1 -> calculated by hand (derived from Paper 
 %% Initial state
 tspan = [0, 60*60*100]; %seconds (8 hour Ara pulse described in paper)
 
-%% single cell concentrations
-x0    = [0, 10^4, 0, 0, 0, 1, 0, 0, 0, 0, 0];     %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_T7p, GFP, T7p
 
 %% Specify reaction network
 pfun = @propensities_2state;
@@ -113,10 +111,10 @@ x_modified = x;
 x_modified(:,2) = [];
 
 % % CAUTION: ARA IS MISSING FROM THIS GRAPH
-createfigure_1_0(t,x_modified, 'Second Ara pulse - counting 1 to 0');
+createfigure_1_0(t,x_modified, 'After second Ara pulse');
 
-%% return only the last row as the new inital state for the next simulation
-x = x(end,:);
+% CAUTION: only ARA being plotted
+createfigure_ARA_degrade(t,x(:,2), 'Ara degradation after second pulse');
 
 end
 
