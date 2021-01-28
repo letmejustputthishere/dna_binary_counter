@@ -70,7 +70,7 @@ p.gP_T7p = 0.011; % T7p decay: sec^-1 -> calculated by hand (derived from Paper 
 
 
 %% Initial state
-tspan = [0, 60*60*100]; %seconds (8 hour Ara pulse described in paper)
+tspan = [0, 60*60*8]; %seconds (8 hour Ara pulse described in paper)
 
 
 %% Specify reaction network
