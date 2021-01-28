@@ -70,7 +70,7 @@ p.gP_T7p = 0.011; % T7p decay: sec^-1 -> calculated by hand (derived from Paper 
 
 
 %% Initial state
-tspan = [0, 60*60*100]; %seconds (8 hour Ara pulse described in paper)
+tspan = [0, 60*60*8]; %seconds (8 hour Ara pulse described in paper)
 
 %% single cell concentrations
 x0    = [0, 10^4, 0, 0, 0, 1, 0, 0, 0, 0, 0];     %DNA_0, Ara, DNA_0_BAD, mRNA_flp, Flp, DNA_1, DNA_1_BAD, mRNA_gfp, mRNA_T7p, GFP, T7p
